@@ -1,9 +1,7 @@
 package org.example.repositories;
 
-import org.apache.catalina.User;
-import org.example.model.Subject;
+import org.example.model.NumberedTask;
 import org.example.model.Task;
-import org.example.model.TaskGroup;
 import org.example.model.UserExamStat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +26,7 @@ public class UserExamRepository {
 
   public Optional<UserExamStat> getUserExamStatById(long userExamStatId) {
     String sql = String.format("""
-        SELECT id, user_id, subject_title, tasks_count, correct_tasks_count
+        SELECT id, user_id, exam_title, submit_date, tasks_count, correct_tasks_count
           FROM user_exam_stat
           WHERE id = %s
         """, userExamStatId);
@@ -38,7 +35,8 @@ public class UserExamRepository {
         new UserExamStat(
             r.getInt("id"),
             r.getInt("user_id"),
-            r.getString("subject_title"),
+            r.getString("exam_title"),
+            r.getTimestamp("submitDate").toLocalDateTime(),
             r.getInt("tasks_count"),
             r.getInt("correct_tasks_count"));
 
@@ -57,7 +55,7 @@ public class UserExamRepository {
 
   public List<UserExamStat> getUserExamStatByUserId(long userId) {
     String sql = String.format("""
-        SELECT id, user_id, subject_title, tasks_count, correct_tasks_count
+        SELECT id, user_id, exam_title, submit_date, tasks_count, correct_tasks_count
           FROM user_exam_stat
           WHERE user_id = %s
         """, userId);
@@ -66,23 +64,42 @@ public class UserExamRepository {
         new UserExamStat(
             r.getInt("id"),
             r.getInt("user_id"),
-            r.getString("subject_title"),
+            r.getString("exam_title"),
+            r.getTimestamp("submit_date").toLocalDateTime(),
             r.getInt("tasks_count"),
             r.getInt("correct_tasks_count"));
 
     return jdbc.query(sql, rowMapper);
   }
 
-  public void saveUserExam(long userId, String subjectTitle,
-                           List<Integer> taskIds, List<Boolean> taskCorrectness) {
-    String sql = "CALL create_user_exam(?, ?, ?, ?)";
+  public List<NumberedTask> generateUserExam(int examId) {
+    String sql = String.format("""
+        SELECT id, serial_number, statement, image, answer_format, answer
+          FROM generate_exam(%s)
+        """, examId);
+
+    RowMapper<NumberedTask> rowMapper = (r, i) ->
+        new NumberedTask(
+            r.getInt("id"),
+            r.getInt("serial_number"),
+            r.getString("statement"),
+            r.getBytes("image"),
+            r.getString("answer_format"),
+            r.getString("answer"));
+
+    return jdbc.query(sql, rowMapper);
+  }
+
+  public void submitUserExam(long userId, String examTitle,
+                           List<Integer> taskIds, List<String> taskAnswers) {
+    String sql = "CALL submit_user_exam(?, ?, ?, ?)";
 
     jdbc.update(con -> {
       PreparedStatement ps = con.prepareStatement(sql);
       ps.setLong(1, userId);
-      ps.setString(2, subjectTitle);
+      ps.setString(2, examTitle);
       ps.setArray(3, con.createArrayOf("INT", taskIds.toArray()));
-      ps.setArray(4, con.createArrayOf("BOOLEAN", taskCorrectness.toArray()));
+      ps.setArray(4, con.createArrayOf("TEXT", taskAnswers.toArray()));
       return ps;
     });
   }

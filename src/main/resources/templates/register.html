@@ -30,7 +30,8 @@
         <form action="/register" method="post">
             <h1>Регистрация</h1>
             <div>
-                <span th:if="${param.error}" th:text="${session['CREDENTIALS_EXCEPTION_MESSAGE']}"></span>
+                <p class="errorMessage"
+                   th:if="${param.error}" th:text="${session['CREDENTIALS_EXCEPTION_MESSAGE']}"></p>
             </div>
             <div id="inputBlock">
                 <div id="loginLabels">
@@ -38,7 +39,7 @@
                     <label for="password">Пароль</label>
                 </div>
                 <div id="loginInputs">
-                    <input name="username" id="username" type="text" required autofocus>
+                    <input name="username" id="username" type="text" maxlength="10" required autofocus>
                     <input name="password" type="password" id="password" required>
                 </div>
             </div>

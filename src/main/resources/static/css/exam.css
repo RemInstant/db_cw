@@ -1,4 +1,4 @@
-.question {
+.task {
     padding: 20px;
     margin: 5px 60px;
 
@@ -7,11 +7,11 @@
     border-radius: 15px;
 }
 
-.question h2 {
+.task h2 {
     margin: 0;
 }
 
-.question label, .question input {
+.task label, .task input {
     font-size: 14pt;
 }
 

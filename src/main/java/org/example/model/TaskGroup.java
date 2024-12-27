@@ -1,7 +1,7 @@
 package org.example.model;
 
 public record TaskGroup(int id,
-                        int subjectId,
+                        int examId,
                         int serialNumber,
                         String title,
                         String answerFormat) {

@@ -27,31 +27,14 @@
 </header>
 <main>
     <form action="/exam" method="post">
-        <div class="question">
+        <div class="task" th:each="task : ${numberedTasks}">
             <h2>Вопрос 1</h2>
-            <p>Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text</p>
-            <p>Output format output format output format output format output format</p>
+            <p th:text="${task.statement}"></p>
+            <p th:text="${task.answerFormat}"></p>
             <div>
-                <label for="question1">Ответ:</label>
-                <input name="questions" id="question1" type="text">
-            </div>
-        </div>
-        <div class="question">
-            <h2>Вопрос 2</h2>
-            <p>Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text</p>
-            <p>Output format output format output format output format output format</p>
-            <div>
-                <label for="question2">Ответ:</label>
-                <input name="questions" id="question2" type="text">
-            </div>
-        </div>
-        <div class="question">
-            <h2>Вопрос 3</h2>
-            <p>Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text</p>
-            <p>Output format output format output format output format output format</p>
-            <div>
-                <label for="question3">Ответ:</label>
-                <input name="questions" id="question3" type="text">
+                <label th:for="'task' + ${task.serialNumber}">Ответ:</label>
+                <input name="taskIds" type="hidden" th:value="${task.id}">
+                <input name="answers" th:id="'task' + ${task.serialNumber}" type="text">
             </div>
         </div>
         <button type="submit">Отправить</button>

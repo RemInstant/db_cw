@@ -28,12 +28,12 @@
 <main>
     <form action="edit" method="post">
         <div class="adminBlock">
-            <a th:href="@{../../{subjectId}/edit(subjectId=${taskGroup.subjectId})}">
+            <a th:href="@{../../{examId}/edit(examId=${taskGroup.examId})}">
                 <span>Назад</span>
             </a>
             <div class="adminInput">
                 <label for="taskGroupTitle">Название</label>
-                <input name="taskGroupTitle" id="taskGroupTitle" type="text"
+                <input name="taskGroupTitle" id="taskGroupTitle" type="text" maxlength="50"
                        th:value="${taskGroup.title}">
                 <label for="taskGroupAnswerFormat">Указание по формату ответа</label>
                 <textarea name="taskGroupAnswerFormat" id="taskGroupAnswerFormat"
@@ -54,9 +54,6 @@
             <button type="submit">Добавить</button>
         </div>
     </form>
-    <div th:if="${error}">
-        <span th:text="${error}"></span>
-    </div>
     <div class="adminBlock">
         <h2>Список вопросов</h2>
         <table>

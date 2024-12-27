@@ -4,51 +4,23 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.services.AppUserDetailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.thymeleaf.DialectConfiguration;
-import org.thymeleaf.ITemplateEngine;
-import org.thymeleaf.dialect.AbstractDialect;
-import org.thymeleaf.expression.Lists;
-import org.thymeleaf.spring6.SpringTemplateEngine;
-import org.thymeleaf.spring6.dialect.SpringStandardDialect;
-import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.spring6.view.ThymeleafViewResolver;
-import org.thymeleaf.standard.StandardDialect;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.stream.IntStream;
 
 @Configuration
 @EnableWebSecurity
@@ -83,21 +55,7 @@ public class SecurityConfig {
         .formLogin(form -> form
             .loginPage("/login").permitAll()
             .defaultSuccessUrl("/home", true)
-            .failureHandler((request, response, exception) -> {
-              String message = exception.getMessage();
-
-              if (exception.getCause() != null) {
-                if (exception.getCause() instanceof CannotGetJdbcConnectionException) {
-                  message = "Не удалось подключиться к базе данных";
-                }
-              } else if (exception instanceof BadCredentialsException) {
-                message = "Неверные учётные данные пользователя";
-              }
-
-              request.getSession().setAttribute("CREDENTIALS_EXCEPTION_MESSAGE", message);
-              response.sendRedirect("/login?error");
-            })
-        )
+            .failureHandler(authenticationFailureHandler()))
         .logout(logout -> logout
             .logoutSuccessUrl("/home")
             .deleteCookies("JSESSIONID"))
@@ -109,9 +67,25 @@ public class SecurityConfig {
             .requestMatchers("/admin").hasRole("ADMIN")
             .requestMatchers("/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated())
-//        .sessionManagement(session -> session
-//            .sessionCreationPolicy(SessionCreationPolicy.NEVER))
         .build();
+  }
+
+  @Bean
+  public AuthenticationFailureHandler authenticationFailureHandler() {
+    return (request, response, exception) -> {
+      String message = exception.getMessage();
+
+      if (exception.getCause() != null) {
+        if (exception.getCause() instanceof CannotGetJdbcConnectionException) {
+          message = "Не удалось подключиться к базе данных";
+        }
+      } else if (exception instanceof BadCredentialsException) {
+        message = "Неверные учётные данные пользователя";
+      }
+
+      request.getSession().setAttribute("CREDENTIALS_EXCEPTION_MESSAGE", message);
+      response.sendRedirect("/login?error");
+    };
   }
 
 //  @Bean

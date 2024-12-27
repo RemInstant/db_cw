@@ -54,24 +54,36 @@ public class CredentialsController {
   }
 
   @PostMapping("/register")
-  public String postRegisterPage(HttpServletRequest request, AppUser appUser, Model model, Principal principal) {
+  public String postRegisterPage(HttpServletRequest request, String username,
+                                 String password, Principal principal) {
+    if (username.length() > 20) {
+      request.getSession().setAttribute("CREDENTIALS_EXCEPTION_MESSAGE", "Слишком длинный логин");
+      return "redirect:/register?error";
+    }
+
+    if (!username.matches("[\\w_]+")) {
+      request.getSession().setAttribute("CREDENTIALS_EXCEPTION_MESSAGE",
+          "Для логина доступны только латиница, цифры и символ нижнего подчёркивания");
+      return "redirect:/register?error";
+    }
+
     if (principal != null) {
       return "redirect:/home";
     }
 
     try {
-      if (credentialsRepository.isUserPresentByUsername(appUser.username())) {
+      if (credentialsRepository.isUserPresentByUsername(username)) {
         request.getSession()
             .setAttribute("CREDENTIALS_EXCEPTION_MESSAGE", "Пользователь с таким именем уже существует");
         return "redirect:/register?error";
       }
 
-      String encryptedPassword = new BCryptPasswordEncoder().encode(appUser.password());
+      String encryptedPassword = new BCryptPasswordEncoder().encode(password);
 
-      credentialsRepository.saveUser(appUser.username(), encryptedPassword);
+      credentialsRepository.saveUser(username, encryptedPassword);
 
       UsernamePasswordAuthenticationToken authRequest =
-          new UsernamePasswordAuthenticationToken(appUser.username(), appUser.password());
+          new UsernamePasswordAuthenticationToken(username, password);
 
       Authentication authentication = authenticationManager.authenticate(authRequest);
       SecurityContextHolder.getContext().setAuthentication(authentication);

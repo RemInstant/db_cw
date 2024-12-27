@@ -1,6 +1,6 @@
 package org.example.repositories;
 
-import org.example.model.Subject;
+import org.example.model.Exam;
 import org.example.model.Task;
 import org.example.model.TaskGroup;
 import org.slf4j.Logger;
@@ -24,22 +24,22 @@ public class ExamDataRepository {
     this.jdbc = jdbc;
   }
 
-  public Optional<Subject> getSubjectById(int subjectId) {
+  public Optional<Exam> getExamById(int examId) {
     String sql = String.format("""
         SELECT id, title
-          FROM subject
+          FROM exam
           WHERE id = %s
-        """, subjectId);
+        """, examId);
 
-    RowMapper<Subject> rowMapper = (r, i) ->
-        new Subject(
+    RowMapper<Exam> rowMapper = (r, i) ->
+        new Exam(
             r.getInt("id"),
             r.getString("title"));
 
-    List<Subject> list = jdbc.query(sql, rowMapper);
+    List<Exam> list = jdbc.query(sql, rowMapper);
 
     if (list.size() > 1) {
-      log.warn("More than 1 subject was found by id ({})", subjectId);
+      log.warn("More than 1 exam was found by id ({})", examId);
     }
 
     if (list.isEmpty()) {
@@ -49,44 +49,44 @@ public class ExamDataRepository {
     return Optional.of(list.getFirst());
   }
 
-  public List<Subject> getAllSubjects() {
+  public List<Exam> getAllExams() {
     String sql = """
         SELECT id, title
-          FROM subject
+          FROM exam
         """;
 
-    RowMapper<Subject> rowMapper = (r, i) ->
-        new Subject(
+    RowMapper<Exam> rowMapper = (r, i) ->
+        new Exam(
             r.getInt("id"),
             r.getString("title"));
 
     return jdbc.query(sql, rowMapper);
   }
 
-  public void saveSubject(String subjectTitle) {
+  public void saveExam(String examTitle) {
     String sql = String.format("""
-        INSERT INTO subject(title)
+        INSERT INTO exam(title)
           VALUES('%s')
-        """, subjectTitle);
+        """, examTitle);
 
     jdbc.update(sql);
   }
 
-  public void editSubject(int subjectId, String subjectTitle) {
+  public void editExam(int examId, String examTitle) {
     String sql = String.format("""
-        UPDATE subject
+        UPDATE exam
           SET title = '%s'
           WHERE id = %s
-        """, subjectTitle, subjectId);
+        """, examTitle, examId);
 
     jdbc.update(sql);
   }
 
-  public void deleteSubjectById(int subjectId) {
+  public void deleteExamById(int examId) {
     String sql = String.format("""
-        DELETE FROM subject
+        DELETE FROM exam
           WHERE id = %s
-        """, subjectId);
+        """, examId);
 
     jdbc.update(sql);
   }
@@ -94,7 +94,7 @@ public class ExamDataRepository {
 
   public Optional<TaskGroup> getTaskGroupsById(int taskGroupId) {
     String sql = String.format("""
-        SELECT id, subject_id, serial_number, title, answer_format
+        SELECT id, exam_id, serial_number, title, answer_format
           FROM task_group
           WHERE id = %s
         """, taskGroupId);
@@ -102,7 +102,7 @@ public class ExamDataRepository {
     RowMapper<TaskGroup> rowMapper = (r, i) ->
         new TaskGroup(
             r.getInt("id"),
-            r.getInt("subject_id"),
+            r.getInt("exam_id"),
             r.getInt("serial_number"),
             r.getString("title"),
             r.getString("answer_format"));
@@ -120,18 +120,18 @@ public class ExamDataRepository {
     return Optional.of(list.getFirst());
   }
 
-  public List<TaskGroup> getAllTaskGroupsBySubjectId(int subjectId) {
+  public List<TaskGroup> getAllTaskGroupsByExamId(int examId) {
     String sql = String.format("""
-        SELECT id, subject_id, serial_number, title, answer_format
+        SELECT id, exam_id, serial_number, title, answer_format
           FROM task_group
-          WHERE subject_id = %s
+          WHERE exam_id = %s
           ORDER BY serial_number
-        """, subjectId);
+        """, examId);
 
     RowMapper<TaskGroup> rowMapper = (r, i) ->
         new TaskGroup(
             r.getInt("id"),
-            r.getInt("subject_id"),
+            r.getInt("exam_id"),
             r.getInt("serial_number"),
             r.getString("title"),
             r.getString("answer_format"));
@@ -139,14 +139,14 @@ public class ExamDataRepository {
     return jdbc.query(sql, rowMapper);
   }
 
-  public void saveTaskGroup(int subjectId, String taskGroupTitle, String taskGroupAnswerFormat) {
+  public void saveTaskGroup(int examId, String taskGroupTitle, String taskGroupAnswerFormat) {
     // TODO: add call
-    List<TaskGroup> taskGroups = getAllTaskGroupsBySubjectId(subjectId);
+    List<TaskGroup> taskGroups = getAllTaskGroupsByExamId(examId);
 
     String sql = String.format("""
-        INSERT INTO task_group(subject_id, serial_number, title, answer_format)
+        INSERT INTO task_group(exam_id, serial_number, title, answer_format)
           VALUES('%s', '%s', '%s', '%s')
-        """, subjectId, taskGroups.size() + 1, taskGroupTitle, taskGroupAnswerFormat);
+        """, examId, taskGroups.size() + 1, taskGroupTitle, taskGroupAnswerFormat);
 
     jdbc.update(sql);
   }

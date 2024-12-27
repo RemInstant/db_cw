@@ -1,7 +1,11 @@
 package org.example.model;
 
-public record AppUser(String username,
+import java.time.LocalDateTime;
+
+public record AppUser(int id,
+                      String username,
                       String password,
-                      String[] authorities) {
+                      String[] authorities,
+                      LocalDateTime registrationDateTime) {
 
 }

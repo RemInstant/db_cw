@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class AppUserDetailService implements UserDetailsService {
+public class AppUserDetailsService implements UserDetailsService {
 
-  private static final Logger log = LoggerFactory.getLogger(AppUserDetailService.class);
+  private static final Logger log = LoggerFactory.getLogger(AppUserDetailsService.class);
 
   private final CredentialsRepository credentialsRepository;
 
-  public AppUserDetailService(CredentialsRepository credentialsRepository) {
+  public AppUserDetailsService(CredentialsRepository credentialsRepository) {
     this.credentialsRepository = credentialsRepository;
   }
 

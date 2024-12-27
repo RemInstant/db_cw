@@ -30,7 +30,8 @@
         <form action="/login" method="post">
             <h1>Авторизация</h1>
             <div>
-                <span th:if="${param.error}" th:text="${session['CREDENTIALS_EXCEPTION_MESSAGE']}"></span>
+                <p class="errorMessage"
+                   th:if="${param.error}" th:text="${session['CREDENTIALS_EXCEPTION_MESSAGE']}"></p>
             </div>
             <div id="inputBlock">
                 <div id="loginLabels">

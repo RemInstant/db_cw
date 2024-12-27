@@ -1,19 +1,10 @@
 package org.example.repositories;
 
 import org.example.model.AppUser;
-import org.example.model.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -32,7 +23,8 @@ public class CredentialsRepository {
 
   public Optional<AppUser> getUserByUsername(String username) {
     String sql = String.format("""
-        SELECT username, password, ARRAY_AGG(authority) authorities, nickname
+        SELECT app_user.id as id, username, password, ARRAY_AGG(authority) authorities,
+               nickname, app_user.registration_date
           FROM user_credentials
           JOIN app_user
             ON user_credentials.user_id = app_user.id
@@ -41,14 +33,16 @@ public class CredentialsRepository {
           LEFT JOIN user_authority
             ON user_authorities.authority_id = user_authority.id
           WHERE username = '%s'
-          GROUP BY username, password, nickname
+          GROUP BY app_user.id, username, password, nickname, app_user.registration_date
         """, username);
 
     RowMapper<AppUser> rowMapper = (r, i) ->
         new AppUser(
+            r.getInt("id"),
             r.getString("username"),
             r.getString("password"),
-            (String[]) r.getArray("authorities").getArray());
+            (String[]) r.getArray("authorities").getArray(),
+            r.getTimestamp("registration_date").toLocalDateTime());
 
     List<AppUser> list = jdbc.query(sql, rowMapper);
 

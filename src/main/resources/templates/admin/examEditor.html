@@ -31,8 +31,8 @@
             <a href="../../edit"><span>Назад</span></a>
             <h2>Редактирование предмета</h2>
             <div class="adminInput">
-                <label for="subjectTitle">Название</label>
-                <input name="subjectTitle" id="subjectTitle" type="text" th:value="${subject.title}">
+                <label for="examTitle">Название</label>
+                <input name="examTitle" id="examTitle" type="text" maxlength="32" th:value="${exam.title}">
             </div>
             <button type="submit">Изменить</button>
         </div>
@@ -42,30 +42,25 @@
             <h2>Добавить категорию вопроса</h2>
             <div class="adminInput">
                 <label for="taskGroupTitle">Название</label>
-                <input name="taskGroupTitle" id="taskGroupTitle" type="text">
+                <input name="taskGroupTitle" id="taskGroupTitle" type="text" maxlength="50">
                 <label for="taskGroupAnswerFormat">Указание по формату ответа</label>
                 <textarea name="taskGroupAnswerFormat" id="taskGroupAnswerFormat"></textarea>
             </div>
             <button type="submit">Добавить</button>
         </div>
     </form>
-    <div th:if="${error}">
-        <span th:text="${error}"></span>
-    </div>
     <div class="adminBlock">
         <h2>Список категорий вопросов</h2>
         <table>
             <tr>
                 <td style="width: 5%">Номер</td>
                 <td>Категория</td>
-                <td style="width: 15%">Количество вопросов</td>
                 <td>Указание по формату вывода</td>
                 <td  style="width: 20%">Действие</td>
             </tr>
             <tr th:each="item : ${groups}">
                 <td th:text="${item.serialNumber}"></td>
                 <td th:text="${item.title}"></td>
-                <td>2</td>
                 <td th:text="${item.answerFormat}"></td>
                 <td>
                     <div>

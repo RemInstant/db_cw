@@ -26,36 +26,31 @@
     </div>
 </header>
 <main>
-    <form action="subject/add" method="post">
+    <form action="exam/add" method="post">
         <div class="adminBlock">
             <a href="../../admin"><span>Назад</span></a>
             <h2>Добавить предмет</h2>
             <div class="adminInput">
-                <label for="subjectTitle">Название</label>
-                <input name="subjectTitle" id="subjectTitle" type="text">
+                <label for="examTitle">Название</label>
+                <input name="examTitle" id="examTitle" type="text" maxlength="32">
             </div>
             <button type="submit">Добавить</button>
         </div>
     </form>
-    <div th:if="${error}">
-        <span th:text="${error}"></span>
-    </div>
     <div class="adminBlock">
         <table>
             <tr>
-                <td style="width: 50%">Предмет</td>
-                <td style="width: 30%">Количество категорий (вопросов)</td>
+                <td style="width: 80%">Предмет</td>
                 <td>Действия</td>
             </tr>
-            <tr th:each="item : ${subjects}">
+            <tr th:each="item : ${exams}">
                 <td th:text="${item.title}"></td>
-                <td>2</td>
                 <td>
                     <div>
-                        <a th:href="@{subject/{id}/edit(id=${item.id})}">
+                        <a th:href="@{exam/{id}/edit(id=${item.id})}">
                             <button type="button">редактировать</button>
                         </a>
-                        <form th:action="@{subject/{id}/delete(id=${item.id})}" method="post">
+                        <form th:action="@{exam/{id}/delete(id=${item.id})}" method="post">
                             <button type="submit">удалить</button>
                         </form>
                     </div>

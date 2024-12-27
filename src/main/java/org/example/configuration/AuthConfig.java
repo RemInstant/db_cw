@@ -32,7 +32,7 @@ public class AuthConfig {
   }
 
 //  @Bean
-//  public AuthenticationProvider authenticationProvider(AppUserDetailService appUserDetailService) {
+//  public AuthenticationProvider authenticationProvider(AppUserDetailsService appUserDetailService) {
 //    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 //    provider.setUserDetailsService(appUserDetailService);
 //    provider.setPasswordEncoder(bCryptPasswordEncoder());
