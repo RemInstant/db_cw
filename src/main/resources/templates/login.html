@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamTrainer</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/credentials.css">
+    <!-- <link rel="icon" href="./favicon.ico" type="image/x-icon"> -->
+</head>
+<body>
+<header>
+    <div id="title">
+        <a href="/home"><h1>ExamTrainer</h1></a>
+    </div>
+    <div id="admin" sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/admin"><button><span>Панель администратора</span></button></a>
+    </div>
+    <div id="unauthorized" sec:authorize="!isAuthenticated()">
+        <a href="/login"><button><span>Вход</span></button></a>
+        <a href="/register"><button><span>Регистрация</span></button></a>
+    </div>
+    <div id="authorized" sec:authorize="isAuthenticated()">
+        <span>Логин: <span sec:authentication="name"></span></span>
+        <a href="/logout"><button><span>Выход</span></button></a>
+    </div>
+</header>
+<main>
+    <div id="loginBlock">
+        <form action="/login" method="post">
+            <h1>Авторизация</h1>
+            <div>
+                <span th:if="${param.error}" th:text="${session['CREDENTIALS_EXCEPTION_MESSAGE']}"></span>
+            </div>
+            <div id="inputBlock">
+                <div id="loginLabels">
+                    <label for="username">Логин</label>
+                    <label for="password">Пароль</label>
+                </div>
+                <div id="loginInputs">
+                    <input name="username" type="text" id="username" required autofocus>
+                    <input name="password" type="password" id="password" required>
+                </div>
+            </div>
+            <button type="submit"><span>Войти</span></button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamTrainer</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <!-- <link rel="icon" href="./favicon.ico" type="image/x-icon"> -->
+</head>
+<body>
+<header>
+    <div id="title">
+        <a href="/home"><h1>ExamTrainer</h1></a>
+    </div>
+    <div id="admin" sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/admin"><button><span>Панель администратора</span></button></a>
+    </div>
+    <div id="unauthorized" sec:authorize="!isAuthenticated()">
+        <a href="/login"><button><span>Вход</span></button></a>
+        <a href="/register"><button><span>Регистрация</span></button></a>
+    </div>
+    <div id="authorized" sec:authorize="isAuthenticated()">
+        <span>Логин: <span sec:authentication="name"></span></span>
+        <a href="/logout"><button><span>Выход</span></button></a>
+    </div>
+</header>
+<main>
+    <div id="generateBlock">
+        <form action="/exam" method="get">
+            <label for="subjectSelect">Предмет</label>
+            <select name="subjectSelect" id="subjectSelect">
+                <option value="math_ege">ЕГЭ Математика</option>
+            </select>
+            <button type="submit" disabled sec:authorize="!isAuthenticated()"><span>Сгенерировать</span></button>
+            <button type="submit" sec:authorize="isAuthenticated()"><span>Сгенерировать</span></button>
+        </form>
+    </div>
+    <div id="delimiter"></div>
+    <div id="unauthorizedStatBlock" sec:authorize="!isAuthenticated()">
+        <h2>Войдите в аккаунт, чтобы начать тренировки</h2>
+    </div>
+    <div id="statBlock" sec:authorize="isAuthenticated()">
+        <div id="statEmpty">
+            <span>Статистика отсутствует</span>
+        </div>
+        <div class="stat">
+            <span>10.10.1010</span>
+            <span>Предмет</span>
+            <span>00/99</span>
+        </div>
+        <div class="stat">
+            <span>10.10.1010</span>
+            <span>Предмет</span>
+            <span>00/99</span>
+        </div>
+        <div class="stat">
+            <span>10.10.1010</span>
+            <span>Предмет</span>
+            <span>00/99</span>
+        </div>
+    </div>
+</main>
+</body>
+</html>

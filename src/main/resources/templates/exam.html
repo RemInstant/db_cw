@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamTrainer</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/exam.css">
+    <!-- <link rel="icon" href="./favicon.ico" type="image/x-icon"> -->
+</head>
+<body>
+<header>
+    <div id="title">
+        <a href="/home"><h1>ExamTrainer</h1></a>
+    </div>
+    <div id="admin" sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/admin"><button><span>Панель администратора</span></button></a>
+    </div>
+    <div id="unauthorized" sec:authorize="!isAuthenticated()">
+        <a href="/login"><button><span>Вход</span></button></a>
+        <a href="/register"><button><span>Регистрация</span></button></a>
+    </div>
+    <div id="authorized" sec:authorize="isAuthenticated()">
+        <span>Логин: <span sec:authentication="name"></span></span>
+        <a href="/logout"><button><span>Выход</span></button></a>
+    </div>
+</header>
+<main>
+    <form action="/exam" method="post">
+        <div class="question">
+            <h2>Вопрос 1</h2>
+            <p>Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text</p>
+            <p>Output format output format output format output format output format</p>
+            <div>
+                <label for="question1">Ответ:</label>
+                <input name="questions" id="question1" type="text">
+            </div>
+        </div>
+        <div class="question">
+            <h2>Вопрос 2</h2>
+            <p>Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text</p>
+            <p>Output format output format output format output format output format</p>
+            <div>
+                <label for="question2">Ответ:</label>
+                <input name="questions" id="question2" type="text">
+            </div>
+        </div>
+        <div class="question">
+            <h2>Вопрос 3</h2>
+            <p>Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text</p>
+            <p>Output format output format output format output format output format</p>
+            <div>
+                <label for="question3">Ответ:</label>
+                <input name="questions" id="question3" type="text">
+            </div>
+        </div>
+        <button type="submit">Отправить</button>
+    </form>
+</main>
+</body>
+</html>

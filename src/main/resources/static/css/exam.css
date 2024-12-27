@@ -1,0 +1,26 @@
+.question {
+    padding: 20px;
+    margin: 5px 60px;
+
+    background-color: wheat;
+    border: 6px solid darkcyan;
+    border-radius: 15px;
+}
+
+.question h2 {
+    margin: 0;
+}
+
+.question label, .question input {
+    font-size: 14pt;
+}
+
+main > form > button {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+
+    padding: 8px 16px;
+
+    font-size: 24px;
+}

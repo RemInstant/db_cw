@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamTrainer</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <!-- <link rel="icon" href="./favicon.ico" type="image/x-icon"> -->
+</head>
+<body>
+<header>
+    <div id="title">
+        <a href="/home"><h1>ExamTrainer</h1></a>
+    </div>
+    <div id="admin" sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/admin"><button><span>Панель администратора</span></button></a>
+    </div>
+    <div id="unauthorized" sec:authorize="!isAuthenticated()">
+        <a href="/login"><button><span>Вход</span></button></a>
+        <a href="/register"><button><span>Регистрация</span></button></a>
+    </div>
+    <div id="authorized" sec:authorize="isAuthenticated()">
+        <span>Логин: <span sec:authentication="name"></span></span>
+        <a href="/logout"><button><span>Выход</span></button></a>
+    </div>
+</header>
+<main>
+    <form action="edit" method="post">
+        <div class="adminBlock">
+            <a href="../../edit"><span>Назад</span></a>
+            <h2>Редактирование предмета</h2>
+            <div class="adminInput">
+                <label for="subjectTitle">Название</label>
+                <input name="subjectTitle" id="subjectTitle" type="text" th:value="${subject.title}">
+            </div>
+            <button type="submit">Изменить</button>
+        </div>
+    </form>
+    <form action="group/add" method="post">
+        <div class="adminBlock">
+            <h2>Добавить категорию вопроса</h2>
+            <div class="adminInput">
+                <label for="taskGroupTitle">Название</label>
+                <input name="taskGroupTitle" id="taskGroupTitle" type="text">
+                <label for="taskGroupAnswerFormat">Указание по формату ответа</label>
+                <textarea name="taskGroupAnswerFormat" id="taskGroupAnswerFormat"></textarea>
+            </div>
+            <button type="submit">Добавить</button>
+        </div>
+    </form>
+    <div th:if="${error}">
+        <span th:text="${error}"></span>
+    </div>
+    <div class="adminBlock">
+        <h2>Список категорий вопросов</h2>
+        <table>
+            <tr>
+                <td style="width: 5%">Номер</td>
+                <td>Категория</td>
+                <td style="width: 15%">Количество вопросов</td>
+                <td>Указание по формату вывода</td>
+                <td  style="width: 20%">Действие</td>
+            </tr>
+            <tr th:each="item : ${groups}">
+                <td th:text="${item.serialNumber}"></td>
+                <td th:text="${item.title}"></td>
+                <td>2</td>
+                <td th:text="${item.answerFormat}"></td>
+                <td>
+                    <div>
+                        <a th:href="@{../group/{id}/edit(id=${item.id})}">
+                            <button type="button">редактировать</button>
+                        </a>
+                        <form th:action="@{group/{id}/delete(id=${item.id})}" method="post">
+                            <button type="submit">удалить</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</main>
+</body>
+</html>

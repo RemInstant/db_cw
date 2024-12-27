@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamTrainer</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <!-- <link rel="icon" href="./favicon.ico" type="image/x-icon"> -->
+</head>
+<body>
+<header>
+    <div id="title">
+        <a href="/home"><h1>ExamTrainer</h1></a>
+    </div>
+    <div id="admin" sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/admin"><button><span>Панель администратора</span></button></a>
+    </div>
+    <div id="unauthorized" sec:authorize="!isAuthenticated()">
+        <a href="/login"><button><span>Вход</span></button></a>
+        <a href="/register"><button><span>Регистрация</span></button></a>
+    </div>
+    <div id="authorized" sec:authorize="isAuthenticated()">
+        <span>Логин: <span sec:authentication="name"></span></span>
+        <a href="/logout"><button><span>Выход</span></button></a>
+    </div>
+</header>
+<main>
+    <div class="adminBlock">
+        <a href="/home"><span>Назад</span></a>
+        <h2>Добавить предмет</h2>
+        <a href="/admin/content/edit"><button><span>Редактировать контент</span></button></a>
+    </div>
+    <div class="adminBlock">
+        <h2>Резервная копия</h2>
+        <a href="/admin/backup"><button><span>Скачать</span></button></a>
+    </div>
+    <form action="admin/backup" method="post" enctype="multipart/form-data">
+        <div class="adminBlock">
+            <h2>Загрузить резервную копию</h2>
+            <div class="adminInput">
+                <label for="backupFile">Файл данных</label>
+                <input name="backupFile" id="backupFile" type="file" required>
+            </div>
+            <button type="submit">Загрузить</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

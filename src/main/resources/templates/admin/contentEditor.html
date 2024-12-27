@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamTrainer</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <!-- <link rel="icon" href="./favicon.ico" type="image/x-icon"> -->
+</head>
+<body>
+<header>
+    <div id="title">
+        <a href="/home"><h1>ExamTrainer</h1></a>
+    </div>
+    <div id="admin" sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/admin"><button><span>Панель администратора</span></button></a>
+    </div>
+    <div id="unauthorized" sec:authorize="!isAuthenticated()">
+        <a href="/login"><button><span>Вход</span></button></a>
+        <a href="/register"><button><span>Регистрация</span></button></a>
+    </div>
+    <div id="authorized" sec:authorize="isAuthenticated()">
+        <span>Логин: <span sec:authentication="name"></span></span>
+        <a href="/logout"><button><span>Выход</span></button></a>
+    </div>
+</header>
+<main>
+    <form action="subject/add" method="post">
+        <div class="adminBlock">
+            <a href="../../admin"><span>Назад</span></a>
+            <h2>Добавить предмет</h2>
+            <div class="adminInput">
+                <label for="subjectTitle">Название</label>
+                <input name="subjectTitle" id="subjectTitle" type="text">
+            </div>
+            <button type="submit">Добавить</button>
+        </div>
+    </form>
+    <div th:if="${error}">
+        <span th:text="${error}"></span>
+    </div>
+    <div class="adminBlock">
+        <table>
+            <tr>
+                <td style="width: 50%">Предмет</td>
+                <td style="width: 30%">Количество категорий (вопросов)</td>
+                <td>Действия</td>
+            </tr>
+            <tr th:each="item : ${subjects}">
+                <td th:text="${item.title}"></td>
+                <td>2</td>
+                <td>
+                    <div>
+                        <a th:href="@{subject/{id}/edit(id=${item.id})}">
+                            <button type="button">редактировать</button>
+                        </a>
+                        <form th:action="@{subject/{id}/delete(id=${item.id})}" method="post">
+                            <button type="submit">удалить</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</main>
+</body>
+</html>

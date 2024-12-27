@@ -1,0 +1,69 @@
+.adminBlock {
+    padding: 20px;
+    margin: 5px 60px;
+
+    background-color: wheat;
+    border: 6px solid darkcyan;
+    border-radius: 15px;
+}
+
+.adminBlock h2 {
+    margin: 2px 0px;
+}
+
+.adminInput {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+    column-gap: 10px;
+
+    width: min-content;
+    margin: 20px 0px;
+}
+
+.adminBlock label, .adminBlock input, .adminBlock textarea, .adminBlock select {
+    font-size: 14pt;
+}
+
+.adminBlock label {
+    text-wrap: nowrap;
+}
+
+.adminBlock input, .adminBlock textarea {
+    width: min-content;
+}
+
+.adminBlock select {
+    padding: 2pt 4pt;
+}
+
+.adminBlock button {
+    padding: 4px 8px;
+
+    font-size: 16px;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    border: 2px solid black;
+}
+
+td {
+    padding: 4px;
+
+    border: 2px solid black;
+
+    font-size: 14pt;
+}
+
+td div {
+    display: flex;
+    flex-flow: row;
+}
+
+td button {
+    margin-left: 20px;
+}
