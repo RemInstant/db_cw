@@ -1,0 +1,18 @@
+.errorBlock {
+    padding: 20px;
+    margin: 5px 60px;
+
+    background-color: wheat;
+    border: 6px solid darkcyan;
+    border-radius: 15px;
+}
+
+.errorBlock h2 {
+    margin: 2px 0px;
+}
+
+.errorBlock button {
+    padding: 4px 8px;
+
+    font-size: 14pt;
+}

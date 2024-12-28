@@ -58,13 +58,11 @@ public class BackupService {
           .redirectOutput(ProcessBuilder.Redirect.to(new File(backupPath)))
           .start()
           .waitFor();
-
-//      throw new IOException("123");
-
     } catch (IOException e) {
-      // TODO: something
+      log.error("IOException occurred while writing backup file");
       throw new RuntimeException(e);
     } catch (InterruptedException e) {
+      log.error("Something interrupted backup writing process");
       throw new RuntimeException(e);
     }
   }
@@ -76,8 +74,8 @@ public class BackupService {
       Files.copy(file, outputStream);
       outputStream.flush();
     } catch (IOException e) {
-//      LOG.info("Error writing file to output stream. Filename was '{}'" + fileName, e);
-//      throw new RuntimeException("IOError writing file to output stream");
+      log.error("IOException occurred while copying a backup into stream");
+      throw new RuntimeException(e);
     }
   }
 
@@ -89,9 +87,8 @@ public class BackupService {
       Files.deleteIfExists(file);
       Files.copy(backupFile.getInputStream(), file);
     } catch (IOException e) {
-      log.info("!!!", e);
-//      LOG.info("Error writing file to output stream. Filename was '{}'" + fileName, e);
-//      throw new RuntimeException("IOError writing file to output stream");
+      log.error("IOException occurred while uploading a backup to backend");
+      throw new RuntimeException(e);
     }
 
     // TODO: append date to log file
@@ -106,8 +103,10 @@ public class BackupService {
           .start()
           .waitFor();
     } catch (IOException e) {
+      log.error("IOException occurred while copying a backup into DB container");
       throw new RuntimeException(e);
     } catch (InterruptedException e) {
+      log.error("Something interrupted copying of a backup into DB container");
       throw new RuntimeException(e);
     }
 
@@ -121,8 +120,10 @@ public class BackupService {
           .start()
           .waitFor();
     } catch (IOException e) {
+      log.error("IOException occurred while DB restoring");
       throw new RuntimeException(e);
     } catch (InterruptedException e) {
+      log.error("Something interrupted DB restoring");
       throw new RuntimeException(e);
     }
   }

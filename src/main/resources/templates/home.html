@@ -28,7 +28,7 @@
 <main>
     <div id="generateBlock">
         <form action="/exam" method="get">
-            <label for="examIdSelector">Предмет</label>
+            <label for="examIdSelector">Экзамен</label>
             <select name="examId" id="examIdSelector">
                 <option th:each="item : ${exams}" th:value="${item.id}" th:text="${item.title}"></option>
             </select>
@@ -41,13 +41,8 @@
         <h2>Войдите в аккаунт, чтобы начать тренировки</h2>
     </div>
     <div id="statBlock" sec:authorize="isAuthenticated()">
-        <div id="statEmpty">
+        <div id="statEmpty" th:if="${userExamStats.size() == 0}">
             <span>Статистика отсутствует</span>
-        </div>
-        <div class="stat">
-            <span th:text="${test}"></span>
-            <span>Предмет</span>
-            <span>00/99</span>
         </div>
         <div class="stat" th:each="stat : ${userExamStats}">
             <span th:text="${stat.formattedSubmitDateTime()}"></span>

@@ -1,8 +1,10 @@
 package org.example.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.Session;
+import org.apache.coyote.Response;
 import org.example.model.Exam;
 import org.example.model.Task;
 import org.example.model.TaskGroup;
@@ -10,14 +12,24 @@ import org.example.repositories.ExamDataRepository;
 import org.example.services.BackupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.net.http.HttpRequest;
 import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,26 +56,40 @@ public class AdminPanelController {
 
 
   @GetMapping("/admin/backup")
-  public void loadBackup(HttpServletResponse response) {
-    String backupPath = backupService.getBackupPath();
-
-    response.setHeader("Content-disposition", "attachment;filename=" + backupPath);
-    response.setContentType("application/octet-stream");
-
+  public ResponseEntity<?> loadBackup(HttpServletRequest request, HttpServletResponse response,
+                                             Model model) {
     try {
-      backupService.loadBackup(response.getOutputStream());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+      backupService.createBackup();
+    } catch (RuntimeException e) {
+      log.error("Failed to load backup", e);
+      return ResponseEntity.internalServerError()
+          .body("При подготовке файла к скачиванию произошла ошибка");
     }
+
+    String backupPath = backupService.getBackupPath();
+    Resource resource = new FileSystemResource(backupPath);
+
+    return ResponseEntity.ok()
+        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=backup.bak")
+        .body(resource);
   }
 
   @PostMapping("/admin/backup")
-  public String uploadBackup(MultipartFile backupFile) {
+  public String uploadBackup(HttpServletRequest request, Model model, MultipartFile backupFile) {
     if (backupFile == null) {
       return "redirect:/admin";
     }
 
-    backupService.restoreFromBackupFile(backupFile);
+    try {
+      backupService.restoreFromBackupFile(backupFile);
+    } catch (RuntimeException e) {
+      model.addAttribute("GLOBAL_EXCEPTION_MESSAGE",
+          "При попытке восстановить БД из резервной копии произошла ошибка");
+      model.addAttribute("GLOBAL_PREV_PAGE", request.getHeader("Referer"));
+      log.error("Failed to upload backup", e);
+      return "error.html";
+    }
 
     return "redirect:/admin";
   }
@@ -78,16 +104,16 @@ public class AdminPanelController {
   }
 
   @PostMapping("/admin/content/exam/add")
-  public String addExam(Model model, String examTitle) {
+  public String addExam(HttpServletRequest request, Model model, String examTitle) {
     validateLength(examTitle, 32, "Слишком длинное название");
     try {
       examDataRepository.saveExam(examTitle);
     } catch (DuplicateKeyException e) {
-      model.addAttribute("error", "Предмет с таким названием уже существует");
-      //does not work with redirect
-
+      model.addAttribute("GLOBAL_EXCEPTION_MESSAGE",
+          "Экзамен с таким названием уже существует");
+      model.addAttribute("GLOBAL_PREV_PAGE", request.getHeader("Referer"));
       log.warn("Attempt to add duplicate exam");
-      return "redirect:/admin/content/edit";
+      return "error.html";
     }
 
     return "redirect:/admin/content/edit";
@@ -124,17 +150,17 @@ public class AdminPanelController {
   }
 
   @PostMapping("/admin/content/exam/{examId}/group/add")
-  public String addTaskGroup(Model model, @PathVariable int examId,
+  public String addTaskGroup(HttpServletRequest request, Model model, @PathVariable int examId,
                              String taskGroupTitle, String taskGroupAnswerFormat) {
     validateLength(taskGroupTitle, 50, "Слишком длинное название");
     try {
       examDataRepository.saveTaskGroup(examId, taskGroupTitle, taskGroupAnswerFormat);
     } catch (DuplicateKeyException e) {
-      model.addAttribute("error", "Категория с таким названием уже существует");
-      //does not work with redirect
-
+      model.addAttribute("GLOBAL_EXCEPTION_MESSAGE",
+          "Категория с таким номером уже существует");
+      model.addAttribute("GLOBAL_PREV_PAGE", request.getHeader("Referer"));
       log.warn("Attempt to add duplicate task group");
-      return String.format("redirect:/admin/content/exam/%s/edit", examId);
+      return "error.html";
     }
 
     return String.format("redirect:/admin/content/exam/%s/edit", examId);

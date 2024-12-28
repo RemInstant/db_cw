@@ -28,7 +28,7 @@
 <main>
     <form action="/exam" method="post">
         <div class="task" th:each="task : ${numberedTasks}">
-            <h2>Вопрос 1</h2>
+            <h2 th:text="'Вопрос ' + ${task.serialNumber}"></h2>
             <p th:text="${task.statement}"></p>
             <p th:text="${task.answerFormat}"></p>
             <div>

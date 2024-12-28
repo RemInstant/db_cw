@@ -29,7 +29,7 @@
     <form action="exam/add" method="post">
         <div class="adminBlock">
             <a href="../../admin"><span>Назад</span></a>
-            <h2>Добавить предмет</h2>
+            <h2>Добавить экзамен</h2>
             <div class="adminInput">
                 <label for="examTitle">Название</label>
                 <input name="examTitle" id="examTitle" type="text" maxlength="32">
@@ -40,7 +40,7 @@
     <div class="adminBlock">
         <table>
             <tr>
-                <td style="width: 80%">Предмет</td>
+                <td style="width: 80%">Экзамен</td>
                 <td>Действия</td>
             </tr>
             <tr th:each="item : ${exams}">
